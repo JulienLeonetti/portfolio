@@ -1,0 +1,96 @@
+/* Réinitialisation */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Corps du document */
+  body {
+    font-family: Arial, sans-serif;
+    background: url('https://img.freepik.com/photos-gratuite/forme-ovale-faite-neons-jaunes-lumieres-rouges-fond-noir_23-2147881271.jpg') no-repeat center center/cover;
+    color: white;
+    overflow-x: hidden;
+  }
+  
+  /* Barre de navigation */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: rgba(50, 50, 50, 0.6); /* Gris semi-transparent */
+    backdrop-filter: blur(10px); /* Effet flou */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre douce */
+  }
+  
+  /* Photo de profil */
+  .profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Rond */
+  }
+  
+  /* Liens de navigation */
+  .nav-links {
+    list-style: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin: 0 10px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: white;
+    background: rgba(50, 50, 50, 0.7); 
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  .nav-links a:hover {
+    background-color: white; /* Fond passe au blanc */
+    color: black; /* Texte passe au noir pour un contraste optimal */
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.6); /* Effet d'ombre lumineuse */
+    transform: scale(1.05); /* Agrandissement léger lors du survol */
+  }
+  
+  
+  /* Contenu principal */
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    padding: 20px;
+  }
+  
+  /* Boîte About Me */
+  .about-box {
+    background: rgba(50, 50, 50, 0.6); /* Gris semi-transparent */
+    backdrop-filter: blur(10px); /* Effet flou */
+    border-radius: 20px; /* Coins arrondis */
+    padding: 20px;
+    width: 60%;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre douce */
+  }
+  
+  h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    line-height: 1.6;
+  }
+  

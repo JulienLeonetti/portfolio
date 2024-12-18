@@ -1,0 +1,130 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+
+  body {
+    font-family: Arial, sans-serif;
+    background: url('https://img.freepik.com/photos-gratuite/forme-ovale-faite-neons-jaunes-lumieres-rouges-fond-noir_23-2147881271.jpg') no-repeat center center/cover;
+    color: white;
+    overflow-x: hidden;
+  }
+  
+ 
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: rgba(50, 50, 50, 0.5); 
+    backdrop-filter: blur(10px); 
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+  }
+  
+  
+  .profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; 
+  }
+  
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin: 0 10px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: white;
+    background: rgba(50, 50, 50, 0.7); 
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  .nav-links a:hover {
+    background-color: white; /* Fond passe au blanc */
+    color: black; /* Texte passe au noir pour un contraste optimal */
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.6); /* Effet d'ombre lumineuse */
+    transform: scale(1.05); /* Agrandissement léger lors du survol */
+  }
+  
+  
+  /* Contenu principal */
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    padding: 20px;
+  }
+  
+  /* Sections d'introduction */
+  .intro {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+  }
+  
+  .intro-box,
+  .about-box {
+    background: rgba(50, 50, 50, 0.5); /* Fond gris semi-transparent */
+    backdrop-filter: blur(10px); /* Effet flou */
+    border-radius: 20px; /* Coins arrondis */
+    padding: 20px;
+    width: 40%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre douce */
+  }
+  
+  /* Titres */
+  h1, h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+  
+  /* Paragraphes */
+  p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  
+ /* Boutons */
+/* Bouton "more" dans une case grise avec texte blanc */
+.more-button {
+    display: inline-block;        /* Pour que le lien se comporte comme un bouton */
+    background-color: #444;       /* Fond gris foncé */
+    color: white;                 /* Texte blanc */
+    padding: 10px 20px;           /* Espacement intérieur */
+    border-radius: 8px;           /* Coins arrondis */
+    text-decoration: none;        /* Supprime le soulignement du lien */
+    font-weight: bold;            /* Texte en gras */
+    transition: 0.3s;             /* Animation lors du survol */
+    text-align: center;           /* Centrer le texte à l'intérieur du bouton */
+
+  }
+  
+  .more-button:hover {
+    background-color: white; /* Couleur de fond passe au blanc */
+    color: black; /* Texte passe au noir pour un contraste optimal */
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.6); /* Effet d'ombre lumineuse */
+    transform: scale(1.05); 
+  }
+  
+  

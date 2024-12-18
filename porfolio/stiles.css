@@ -1,0 +1,131 @@
+/* Réinitialisation des styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: url('https://img.freepik.com/photos-gratuite/forme-ovale-faite-neons-jaunes-lumieres-rouges-fond-noir_23-2147881271.jpg') no-repeat center center/cover;
+  color: white;
+  overflow-x: hidden;
+  min-height: 100vh; /* Assure que le fond couvre tout l'écran */
+}
+
+/* Barre de navigation */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: rgba(50, 50, 50, 0.5); 
+  backdrop-filter: blur(10px); 
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li {
+  margin: 0 10px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  background: rgba(50, 50, 50, 0.7); 
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: white; /* Fond passe au blanc */
+  color: black; /* Texte passe au noir pour un contraste optimal */
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.6); /* Effet d'ombre lumineuse */
+  transform: scale(1.05); /* Agrandissement léger lors du survol */
+}
+
+
+.cards-container {
+  display: flex;
+  justify-content: center; /* Aligner les cartes horizontalement au centre */
+  gap: 50px; /* Ajouter un espacement entre les cartes */
+  margin-top: 150px; /* Ajustez cet espace selon vos besoins */
+}
+
+/* Styles pour la carte */
+.card {
+  position: relative;
+  width: 400px; /* Largeur de la carte */
+  height: 550px; /* Hauteur de la carte */
+  margin: 10px;
+  border-radius: 20px; /* Coins arrondis pour la carte */
+  overflow: hidden;
+  background: rgba(50, 50, 50, 0.5);
+  display: flex; /* Utilisation de flexbox */
+  flex-direction: column; /* Empile les éléments verticalement */
+  align-items: center; /* Centre horizontalement */
+  justify-content: flex-start; /* Aligne les éléments en haut */
+  text-align: center; /* Centrer le texte */
+  padding-top: 40px; /* Espacement au-dessus pour abaisser l'image */
+}
+
+/* Style pour l'image en haut */
+.top-image {
+  width: 120px; /* Taille de l'image ronde */
+  height: 120px; /* Hauteur égale à la largeur */
+  object-fit: cover;
+  border-radius: 50%; /* Transforme l'image en cercle parfait */
+  margin-top: 0px; /* Décalage supplémentaire pour abaisser l'image */
+  margin-bottom: 20px; /* Ajout d'espace entre l'image et le contenu */
+}
+
+/* Style pour le contenu de la carte */
+.card-content {
+  padding: 10px 20px; /* Espacement interne autour du texte */
+  flex: 1; /* Permet au contenu de prendre tout l'espace restant */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centre le texte verticalement */
+  align-items: center; /* Centre le texte horizontalement */
+}
+
+/* Style pour le bouton "More" */
+.more-button {
+  padding: 10px 20px;            /* Augmenter la largeur du bouton (20px à gauche et à droite) */
+  background-color: rgba(100, 100, 100, 0.7);
+  color: white;
+  font-weight: bold;
+  font-size: 15px;               /* Augmenter la taille du texte */
+  border: none;
+  text-decoration: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;              /* Espacement au-dessus du bouton */
+  transition: all 0.3s ease;     /* Transition fluide */
+  font-family: Arial, sans-serif;
+}
+
+.more-button:hover {
+  background-color: white; /* Couleur de fond passe au blanc */
+  color: black;             /* Texte passe au noir pour un contraste optimal */
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.6); /* Effet d'ombre lumineuse */
+  transform: scale(1.05); 
+}
