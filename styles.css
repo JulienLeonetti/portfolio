@@ -83,14 +83,32 @@
     width: 60%;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre douce */
-  }
-  
-  h2 {
+    transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-box h2, .about-box p {
+    opacity: 0; /* Texte invisible au départ */
+    transform: translateX(-100%); /* Décalage du texte hors de l'écran à gauche */
+    animation: fadeInFromLeft 2s forwards; /* Animation de l'apparition */
+}
+
+@keyframes fadeInFromLeft {
+    0% {
+        opacity: 0; /* Invisible au début */
+        transform: translateX(-100%); /* Hors de l'écran à gauche */
+    }
+    100% {
+        opacity: 1; /* Visible à la fin */
+        transform: translateX(0); /* Position finale */
+    }
+}
+
+h2 {
     font-size: 2em;
     margin-bottom: 20px;
-  }
-  
-  p {
+}
+
+p {
     line-height: 1.6;
-  }
+}
   
