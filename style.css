@@ -338,56 +338,38 @@ p {
 }
 
 /* Styles pour la carte */
-.card {
-  position: relative;
-  width: 400px; /* Largeur de la carte */
-  height: 550px; /* Hauteur de la carte */
-  margin: 10px;
-  border-radius: 20px; /* Coins arrondis pour la carte */
-  overflow: hidden;
-  background: rgba(50, 50, 50, 0.5);
-  display: flex; /* Utilisation de flexbox */
-  flex-direction: column; /* Empile les éléments verticalement */
-  align-items: center; /* Centre horizontalement */
-  justify-content: flex-start; /* Aligne les éléments en haut */
-  text-align: center; /* Centrer le texte */
-  padding-top: 40px; /* Espacement au-dessus pour abaisser l'image */
+.gallery{
+  position:relative;
+  width:200px;
+  height:300px;
+  transform-style:preserve-3d;
+  animation:rotate 35s linear infinite;
 }
 
-/* Style pour l'image en haut */
-.top-image {
-  width: 120px; /* Taille de l'image ronde */
-  height: 120px; /* Hauteur égale à la largeur */
-  object-fit: cover;
-  border-radius: 50%; /* Transforme l'image en cercle parfait */
-  margin-top: 0px; /* Décalage supplémentaire pour abaisser l'image */
-  margin-bottom: 20px; /* Ajout d'espace entre l'image et le contenu */
+@keyframes rotate{
+  from{
+    transform:perspective(1200px) rotateY(0deg);
+  }
+  
+  to{
+    transform:perspective(1200px) rotateY(360deg);
+  }
 }
 
-/* Style pour le contenu de la carte */
-.card-content {
-  padding: 10px 20px; /* Espacement interne autour du texte */
-  flex: 1; /* Permet au contenu de prendre tout l'espace restant */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Centre le texte verticalement */
-  align-items: center; /* Centre le texte horizontalement */
+.gallery span{
+  position:absolute;
+  width:100%;
+  height:100%;
+  transform-origin:center;
+  transform-style:preserve-3d;
+  transform:rotateY(calc(var(--i) * 45deg)) translateZ(380px);
 }
 
-/* Style pour le bouton "More" */
-.more-button {
-  padding: 10px 20px;            /* Augmenter la largeur du bouton (20px à gauche et à droite) */
-  background-color: rgba(100, 100, 100, 0.7);
-  color: white;
-  font-weight: bold;
-  font-size: 15px;               /* Augmenter la taille du texte */
-  border: none;
-  text-decoration: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 20px;              /* Espacement au-dessus du bouton */
-  transition: all 0.3s ease;     /* Transition fluide */
-  font-family: Arial, sans-serif;
+.gallery span img{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .more-button:hover {
@@ -395,4 +377,184 @@ p {
   color: black;             /* Texte passe au noir pour un contraste optimal */
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.6); /* Effet d'ombre lumineuse */
   transform: scale(1.05); 
+}
+/* From Uiverse.io by ahmed150up */ 
+.reseaux {
+  display: flex;
+  height: 70px;
+  width: 270px;
+}
+
+.reseaux svg {
+  position: absolute;
+  display: flex;
+  width: 60%;
+  height: 100%;
+  font-size: 24px;
+  font-weight: 700;
+  opacity: 1;
+  transition: opacity 0.25s;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.reseaux .social-link1,.reseaux .social-link2,.reseaux .social-link3,.reseaux .social-link4 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25%;
+  color: whitesmoke;
+  font-size: 24px;
+  text-decoration: none;
+  transition: 0.25s;
+  border-radius: 50px;
+}
+
+.reseaux svg {
+  transform: scale(1);
+}
+
+.reseaux .social-link1:hover {
+  background: #f09433;
+  background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background: -webkit-linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+  background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f09433', endColorstr='#bc1888',GradientType=1 );
+  animation: bounce_613 0.4s linear;
+}
+
+.reseaux .social-link2:hover {
+  background-color: #00ccff;
+  animation: bounce_613 0.4s linear;
+}
+
+.reseaux .social-link3:hover {
+  background-color: #5865f2;
+  animation: bounce_613 0.4s linear;
+}
+
+.reseaux .social-link4:hover {
+  background-color: #12a50b;
+  animation: bounce_613 0.4s linear;
+}
+
+@keyframes bounce_613 {
+  40% {
+    transform: scale(1.4);
+  }
+
+  60% {
+    transform: scale(0.8);
+  }
+
+  80% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+.reseaux {
+  background: rgba(50, 50, 50, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  width: 30%;  /* Réduit la largeur de la boîte */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+.flip-card {
+  background-color: transparent;
+  width: 245px;
+  height: 270px;
+  perspective: 1000px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: 70px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  border-radius: 2em;
+  backface-visibility: hidden;
+}
+
+.flip-card-front {
+  background-color: #240d29;
+  border: 4px solid #c143da;
+}
+
+.profil-image {
+  background-color: transparent;
+  border: none;
+  margin-top: 15px;
+  border-radius: 5em;
+  width: 120px;
+  height: 120px;
+  margin-left: 50px;
+}
+
+.pfp {
+  border-radius: 35em;
+  fill: #c143da;
+}
+
+.name {
+  margin-top: 15px;
+  font-size: 27px;
+  color: #c143da;
+  font-weight: bold;
+}
+
+.flip-card-back {
+  background-color: #240d29;
+  border: 4px solid #c143da;
+  transform: rotateY(180deg);
+  padding: 11px;
+}
+
+.description {
+  margin-top: 10px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: white
+}
+
+.socialbar {
+  background-color: transparent;
+  border-radius: 3em;
+  width: 90%;
+  padding: 14px;
+  margin-top: 11px;
+  margin-left: 10px;
+  word-spacing: 24px;
+  color: white;
+}
+
+.socialbar svg {
+  transition: 0.4s;
+  width: 20px;
+  height: 20px;
+  color: #c143da
+}
+
+.socialbar svg:hover {
+  color: white;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
 }
