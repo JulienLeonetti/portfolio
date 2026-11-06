@@ -1,147 +1,160 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
-import { LivingType, MorphGrid, SensitiveSurface } from './components/Experiments';
-import { experiments } from './data/experiments';
+import { Component, Suspense, lazy, useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
+import { publishedProjects as projects } from './data/projects';
 import { profile, contactLinks } from './data/site';
-import { publishedProjects } from './data/projects';
+import { portraitAssets } from './data/portrait';
+import { projectProgress, useJourney } from './hooks/useJourney';
 import { useReducedMotion } from './hooks/useMotion';
-import { useGallery } from './hooks/useGallery';
-
+import ProjectModal from './components/ProjectModal';
+const PortraitScene=lazy(()=>import('./components/PortraitScene'));
+class SceneBoundary extends Component<{children:ReactNode;onFailure:()=>void},{failed:boolean}>{
+ state={failed:false};static getDerivedStateFromError(){return{failed:true};}componentDidCatch(){this.props.onFailure();}render(){return this.state.failed?null:this.props.children;}
+}
 const Arrow=()=> <svg className="arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" stroke="currentColor" strokeWidth="1.5"/></svg>;
-const items=[
-  ...experiments.map(e=>({...e,kind:'experiment' as const})),
-  ...publishedProjects.map((p,i)=>({slug:p.slug,title:p.title,category:p.category,description:p.description,instruction:p.context,number:String(i+4).padStart(2,'0'),kind:'project' as const})),
-];
-type Overlay={kind:'experience';slug:string}|{kind:'about'|'contact'}|null;
-function hasWebGL(){try{const gl=document.createElement('canvas').getContext('webgl');if(!gl)return false;gl.getExtension('WEBGL_lose_context')?.loseContext();return true;}catch{return false;}}
+type Overlay={kind:'project';slug:string}|{kind:'about'|'contact'}|null;
+function hashProject(){try{const slug=decodeURIComponent(location.hash.replace(/^#projet\//,''));return projects.find(project=>project.slug===slug);}catch{return undefined;}}
+function supportsWebGL(){try{const gl=document.createElement('canvas').getContext('webgl2');if(!gl)return false;gl.getExtension('WEBGL_lose_context')?.loseContext();return true;}catch{return false;}}
 
 export default function App(){
-  const reduced=useReducedMotion();
-  const [webgl,setWebgl]=useState(hasWebGL);
-  const [simple,setSimple]=useState(false);
-  const [overlay,setOverlay]=useState<Overlay>(null);
-  const [paused,setPaused]=useState(false);
-  const [gridStep,setGridStep]=useState(0);
-  const [pulse,setPulse]=useState(0);
-  const gallery=useRef<HTMLElement>(null);
-  const opener=useRef<HTMLElement|null>(null);
-  const savedScroll=useRef(0);
-  const savedExplore=useRef(0);
-  const mode=reduced||!webgl||simple?'index':'explore';
-  const detail=overlay?.kind==='experience'?overlay.slug:null;
-  const info=overlay?.kind==='about'||overlay?.kind==='contact'?overlay.kind:null;
-  const failure=useCallback(()=>setWebgl(false),[]);
-  const close=useCallback(()=>setOverlay(null),[]);
-  useGallery(gallery,mode,detail,reduced,paused);
+ const reduced=useReducedMotion(),initialProject=useRef(hashProject());
+ const [fallback,setFallback]=useState(()=>!supportsWebGL()),[ready,setReady]=useState(false),[paused,setPaused]=useState(false),[reading,setReading]=useState(false);
+ const [active,setActive]=useState(()=>Math.max(0,projects.findIndex(project=>project.slug===initialProject.current?.slug)));
+ const [overlay,setOverlay]=useState<Overlay>(()=>initialProject.current?{kind:'project',slug:initialProject.current.slug}:null);
+ const root=useRef<HTMLElement>(null),progress=useRef(0),opener=useRef<HTMLElement|null>(null),origin=useRef<DOMRect|null>(null);
+ const savedScroll=useRef(0),savedReadingScroll=useRef(0),openedFromApp=useRef(false),overlayRef=useRef(overlay);overlayRef.current=overlay;
+ const onReady=useCallback(()=>setReady(true),[]),onFailure=useCallback(()=>{setFallback(true);setReady(false);},[]),onActive=useCallback((index:number)=>setActive(index),[]);
+ const blocked=Boolean(overlay);
+ useJourney(root,progress,projects.length,reading,fallback,blocked,onActive);
 
-  useEffect(()=>{
-    if(!overlay)return;
-    const priorOverflow=document.body.style.overflow;
-    document.body.style.overflow='hidden';
-    const panel=detail?gallery.current?.querySelector<HTMLElement>('[data-slug="'+detail+'"]'):document.querySelector<HTMLElement>('.info-panel');
-    const focusFrame=requestAnimationFrame(()=>panel?.querySelector<HTMLButtonElement>('[data-close]')?.focus({preventScroll:true}));
-    const key=(event:KeyboardEvent)=>{
-      if(event.key==='Escape'){event.preventDefault();close();}
-      if(event.key==='Tab'){
-        const nodes=Array.from(panel?.querySelectorAll<HTMLElement>('button:not([disabled]),a[href],[tabindex="0"]')??[]);
-        const first=nodes[0],last=nodes[nodes.length-1];
-        if(event.shiftKey&&(document.activeElement===first||!panel?.contains(document.activeElement))){event.preventDefault();last?.focus({preventScroll:true});}
-        else if(!event.shiftKey&&(document.activeElement===last||!panel?.contains(document.activeElement))){event.preventDefault();first?.focus({preventScroll:true});}
-      }
-    };
-    document.addEventListener('keydown',key);
-    return()=>{
-      cancelAnimationFrame(focusFrame);document.body.style.overflow=priorOverflow;document.removeEventListener('keydown',key);
-      requestAnimationFrame(()=>{
-        window.scrollTo({top:savedScroll.current,behavior:'instant'});
-        const trigger=detail?gallery.current?.querySelector<HTMLButtonElement>('[data-slug="'+detail+'"] .panel-hit'):opener.current;
-        trigger?.focus({preventScroll:true});
-      });
-    };
-  },[overlay,detail,close]);
+ const close=useCallback(()=>{
+   if(overlayRef.current?.kind==='project'){
+     if(openedFromApp.current&&history.state?.portfolioProject){openedFromApp.current=false;history.back();return;}
+     history.replaceState({sceneScroll:savedScroll.current},'',location.pathname+location.search);
+   }
+   setOverlay(null);
+ },[]);
+ useLayoutEffect(()=>{
+   const project=initialProject.current;if(!project||!root.current)return;
+   const index=projects.findIndex(item=>item.slug===project.slug),range=Math.max(0,root.current.offsetHeight-innerHeight);
+   const scroll=history.state?.sceneScroll??range*projectProgress(index,projects.length);
+   savedScroll.current=scroll;progress.current=projectProgress(index,projects.length);
+   window.scrollTo({top:scroll,behavior:'instant'});
+ },[]);
+ useEffect(()=>{
+   const restoration=history.scrollRestoration;history.scrollRestoration='manual';
+   const pop=()=>{
+     const project=hashProject();savedScroll.current=history.state?.sceneScroll??savedScroll.current;
+     setOverlay(project?{kind:'project',slug:project.slug}:null);
+     if(project)setActive(projects.findIndex(item=>item.slug===project.slug));
+     requestAnimationFrame(()=>window.scrollTo({top:savedScroll.current,behavior:'instant'}));
+   };
+   addEventListener('popstate',pop);
+   return()=>{removeEventListener('popstate',pop);history.scrollRestoration=restoration;};
+ },[]);
+ useEffect(()=>{
+   if(!overlay)return;
+   const previous=document.body.style.overflow;document.body.style.overflow='hidden';
+   const panel=document.querySelector<HTMLElement>('.overlay-panel');
+   const frame=requestAnimationFrame(()=>panel?.querySelector<HTMLButtonElement>('[data-close]')?.focus({preventScroll:true}));
+   const key=(event:KeyboardEvent)=>{
+     if(event.key==='Escape'){event.preventDefault();close();}
+     if(event.key==='Tab'){
+       const nodes=Array.from(panel?.querySelectorAll<HTMLElement>('button:not([disabled]),a[href],input,[tabindex="0"]')??[]);
+       const first=nodes[0],last=nodes[nodes.length-1];
+       if(event.shiftKey&&(document.activeElement===first||!panel?.contains(document.activeElement))){event.preventDefault();last?.focus({preventScroll:true});}
+       else if(!event.shiftKey&&(document.activeElement===last||!panel?.contains(document.activeElement))){event.preventDefault();first?.focus({preventScroll:true});}
+     }
+   };
+   document.addEventListener('keydown',key);
+   return()=>{
+     cancelAnimationFrame(frame);document.body.style.overflow=previous;document.removeEventListener('keydown',key);
+     requestAnimationFrame(()=>{
+       window.scrollTo({top:savedScroll.current,behavior:'instant'});
+       const trigger=opener.current?.isConnected?opener.current:overlay.kind==='project'?document.querySelector<HTMLElement>('[data-project="'+overlay.slug+'"] button'):null;
+       trigger?.focus({preventScroll:true});
+     });
+   };
+ },[overlay,close]);
 
-  function open(next:Exclude<Overlay,null>,event:MouseEvent<HTMLButtonElement>){
-    opener.current=event.currentTarget;savedScroll.current=window.scrollY;setPulse(0);setOverlay(next);
-  }
-  function explore(){window.scrollTo({top:0,behavior:reduced?'instant':'smooth'});}
-  function goToExperience(index:number){
-    const range=Math.max(0,(gallery.current?.offsetHeight??innerHeight)-innerHeight);
-    window.scrollTo({top:index/Math.max(1,items.length-1)*range,behavior:reduced?'instant':'smooth'});
-  }
-  function toggleReading(){
-    if(mode==='explore')savedExplore.current=window.scrollY;
-    setSimple(value=>!value);
-    requestAnimationFrame(()=>window.scrollTo({top:mode==='explore'?0:savedExplore.current,behavior:'instant'}));
-  }
-  const blocked=Boolean(overlay);
-  return <div className="portfolio" data-view={mode} data-detail={Boolean(detail)} data-info={info??''} data-paused={paused||reduced}>
-    <a className="skip-link" href="#laboratoire">Aller aux expériences</a>
-    <header className="header" inert={blocked}>
-      <button className="monogram" onClick={explore} aria-label="JL — retour au début">JL<span>.</span></button>
-      <div className="header-study"><span>Étudiant en BUT MMI</span><span>Design & développement</span></div>
-      <div className="header-location"><span>Basé en</span><span>Corse, France</span></div>
-      <nav aria-label="Navigation principale">
-        <button onClick={explore} aria-current="location">Explorer</button><span aria-hidden="true">·</span>
-        <button onClick={e=>open({kind:'about'},e)}>À propos</button><span aria-hidden="true">·</span>
-        <button onClick={e=>open({kind:'contact'},e)}>Contact</button>
-      </nav>
-    </header>
-    <main>
-      <section id="laboratoire" className={'gallery '+(mode==='index'?'is-index':'')} ref={gallery} aria-label="Galerie interactive" tabIndex={-1} inert={Boolean(info)} style={{'--item-count':items.length} as React.CSSProperties}>
-        <div className="gallery-stage">
-          <div className="space-guides" aria-hidden="true"><div className="space-orbit"/><span className="cross cross-one">+</span><span className="cross cross-two">+</span><span className="space-coordinate">JL / ESPACE CRÉATIF</span></div>
-          <div className="lab-heading" inert={Boolean(detail)}><span className="eyebrow"><i className="status-dot"/> LABORATOIRE — {String(experiments.length).padStart(2,'0')} EXPÉRIENCES</span><span>Expériences créées pour ce portfolio</span></div>
-          {mode==='index'&&<div className="simple-heading" inert={blocked}><h2>{profile.name}</h2><p>Le laboratoire · lecture simplifiée</p></div>}
-          {detail&&<div className="detail-backdrop" aria-hidden="true"/>}
-          {items.map((item,i)=>{
-            const selected=detail===item.slug;
-            const project=publishedProjects.find(p=>p.slug===item.slug);
-            return <article key={item.slug} className={'gallery-panel panel-'+i+(selected?' is-detail':'')+(project?' is-project':'')} data-slug={item.slug} role={selected?'dialog':undefined} aria-modal={selected?true:undefined} aria-labelledby={'title-'+item.slug} aria-describedby={selected?'instruction-'+item.slug:undefined} inert={Boolean(detail&&!selected)}>
-              <div className="panel-visual">
-                {i===0?<LivingType active={selected} reduced={reduced} paused={paused} pulse={pulse}/>:i===1?<MorphGrid step={gridStep} reduced={reduced||paused}/>:i===2?<SensitiveSurface active={selected} reduced={reduced||!webgl} paused={paused} pulse={pulse} onFailure={failure}/>:project?<img src={project.image.src} alt={project.image.alt}/>:null}
-                {!selected&&<button className="panel-hit" onPointerDown={e=>e.preventDefault()} aria-label={'Ouvrir '+item.title} onClick={e=>open({kind:'experience',slug:item.slug},e)}><span className="panel-open">Explorer <Arrow/></span></button>}
-              </div>
-              <div className="panel-caption">
-                <div className="panel-number eyebrow">{item.number}<span> / {item.kind==='experiment'?'LAB':'PROJET'}</span></div>
-                <div>{project&&<span className="project-category eyebrow">{item.category}</span>}<h3 id={'title-'+item.slug}>{item.title}</h3><p>{selected?item.instruction:item.description}</p></div>
-                {!selected&&<span className="caption-arrow" aria-hidden="true">↗</span>}
-              </div>
-              {selected&&<>
-                <button className="detail-close" data-close onClick={close}>Retour à la galerie <span aria-hidden="true">×</span></button>
-                <span className="sr-only" id={'instruction-'+item.slug}>{item.instruction}</span>
-                {i<3&&<div className="experiment-controls">
-                  {i===1?<><button className="control-secondary" onClick={()=>setGridStep(value=>(value+2)%3)} aria-label="État précédent">←</button><span className="eyebrow" aria-live="polite">{['STRUCTURE','DÉCALAGE','MONOGRAMME JL'][gridStep]} / {gridStep+1}—3</span><button className="control-primary" onClick={()=>setGridStep(value=>(value+1)%3)}>Transformer <span>↗</span></button></>:<><span className="eyebrow">POINTEUR · TACTILE · BOUTON</span><button className="control-primary" onClick={()=>setPulse(value=>value+1)}>{i===0?'Animer les lettres':'Créer une onde'}<span>↗</span></button></>}
-                </div>}
-                {project&&<div className="project-detail" tabIndex={0} aria-label="Présentation du projet"><p>{project.context}</p><h4>Mon rôle</h4><p>{project.role}</p><h4>La démarche</h4>{project.approach.map((p,j)=><p key={j}>{p}</p>)}{project.gallery.map(img=><img key={img.src} src={img.src} alt={img.alt} loading="lazy"/>)}{project.links.map(link=><a key={link.url} href={link.url}>{link.label} ↗</a>)}</div>}
-              </>}
-            </article>;
-          })}
-          <div className="gallery-intro" inert={blocked} aria-hidden={mode==='index'?true:undefined}>
-            <div className="intro-copy"><p>{profile.introduction}</p><span className="eyebrow">DESIGN · CODE · INTERACTION</span></div>
-            <h1><span>Julien</span> <span>Leonetti</span><i aria-hidden="true">.</i></h1>
-          </div>
-          <div className="journey-caption" inert={blocked}>{items.map(item=><div key={item.slug} data-caption><span className="eyebrow">{item.kind==='experiment'?'EXPÉRIENCE':'PROJET'} {item.number} / {item.category}</span><h2>{item.title}</h2><p>{item.description}</p></div>)}</div>
-          <div className="journey-marker" inert={blocked}>
-            <div className="journey-count eyebrow"><span className="exploration-current">01</span><span>/ {String(items.length).padStart(2,'0')}</span></div>
-            {mode==='explore'&&<div className="experience-stops" aria-label="Accès direct aux expériences">{items.map((item,i)=><button key={item.slug} onClick={()=>goToExperience(i)} aria-label={'Centrer '+item.title}><span/></button>)}</div>}
-            {mode==='explore'&&<button className="scroll-invite" onClick={()=>window.scrollBy({top:innerHeight*.8,behavior:'smooth'})}>Défiler pour explorer <span>↓</span></button>}
-          </div>
-          <div className="progress-track" role="progressbar" aria-label="Progression dans la galerie" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}><div className="progress-fill"/></div>
-        </div>
-      </section>
-    </main>
-    <div className="accessibility-controls" inert={blocked}>
-      {!reduced&&webgl?<button className="reading-toggle" onClick={toggleReading} aria-pressed={simple}>{simple?'Revenir à la galerie':'Lecture simplifiée'}</button>:<span className="reading-label">{reduced?'Mouvement réduit':'Lecture simplifiée'}</span>}
-      {!reduced&&<button className="motion-toggle" onClick={()=>setPaused(value=>!value)} aria-pressed={paused} aria-label={paused?'Reprendre les animations':'Suspendre les animations'}><span aria-hidden="true">{paused?'▷':'Ⅱ'}</span></button>}
-    </div>
-    {info&&<div className="info-layer">
-      <div className="info-backdrop" onClick={close} aria-hidden="true"/>
-      <aside className="info-panel" role="dialog" aria-modal="true" aria-labelledby="info-title" aria-describedby="info-description">
-        <div className="info-top"><span className="eyebrow">{info==='about'?'À PROPOS':'CONTACT'} / JULIEN LEONETTI</span><button data-close onClick={close} aria-label={'Fermer '+(info==='about'?'À propos':'Contact')}>×</button></div>
-        <h2 id="info-title">{info==='about'?'Moi, c’est Julien.':'Et si on échangeait ?'}</h2>
-        <p id="info-description">{info==='about'?profile.introduction:'Design, développement, création numérique.'}</p>
-        {info==='about'?<div className="info-note eyebrow">BUT MMI · IUT DE CORSE<br/>BASÉ EN CORSE, FRANCE</div>:contactLinks.length>0?<div className="contact-links">{contactLinks.map(link=><a href={link.href} key={link.label}>{link.label}<Arrow/></a>)}</div>:null}
-        <button className="info-return" onClick={close}>Retour à la galerie <Arrow/></button>
-      </aside>
-    </div>}
-  </div>;
+ function goTo(index:number,instant=false){
+   if(fallback){setReading(true);return;}
+   const target=Math.max(0,Math.min(projects.length-1,index)),range=Math.max(1,(root.current?.offsetHeight??innerHeight)-innerHeight);
+   window.scrollTo({top:projectProgress(target,projects.length)*range,behavior:reduced||instant?'instant':'smooth'});
+ }
+ useEffect(()=>{
+   const key=(event:KeyboardEvent)=>{
+     if(overlay||reading||progress.current<.18||event.altKey||event.metaKey||event.ctrlKey)return;
+     if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();goTo(active+(event.key==='ArrowRight'?1:-1));}
+   };
+   addEventListener('keydown',key);return()=>removeEventListener('keydown',key);
+ });
+ function explore(){if(fallback){setReading(true);return;}goTo(0);}
+ function returnPortrait(){
+   savedScroll.current=0;openedFromApp.current=false;
+   if(hashProject())history.replaceState({sceneScroll:0},'',location.pathname+location.search);
+   setOverlay(null);setReading(false);
+   requestAnimationFrame(()=>window.scrollTo({top:0,behavior:reduced?'instant':'smooth'}));
+ }
+ function openProject(slug:string,event:MouseEvent<HTMLButtonElement>){
+   opener.current=event.currentTarget;origin.current=event.currentTarget.querySelector('img')?.getBoundingClientRect()??event.currentTarget.getBoundingClientRect();
+   window.scrollTo({top:scrollY,behavior:'instant'});savedScroll.current=scrollY;openedFromApp.current=true;
+   history.replaceState({...history.state,sceneScroll:scrollY},'',location.href);
+   history.pushState({portfolioProject:true,sceneScroll:scrollY,slug},'','#projet/'+slug);
+   setOverlay({kind:'project',slug});
+ }
+ function openInfo(kind:'about'|'contact',event:MouseEvent<HTMLButtonElement>){opener.current=event.currentTarget;origin.current=null;window.scrollTo({top:scrollY,behavior:'instant'});savedScroll.current=scrollY;setOverlay({kind});}
+ function toggleReading(){
+   if(!reading){savedReadingScroll.current=scrollY;setReading(true);window.scrollTo({top:0,behavior:'instant'});}
+   else{setReading(false);requestAnimationFrame(()=>window.scrollTo({top:savedReadingScroll.current,behavior:'instant'}));}
+ }
+ const project=overlay?.kind==='project'?projects.find(item=>item.slug===overlay.slug):undefined;
+ return <div className="portfolio" data-fallback={fallback} data-reading={reading} data-paused={paused||reduced} data-overlay={blocked} data-ready={ready}>
+   <a className="skip-link" href="#scene">Aller aux projets</a>
+   <header className="header" inert={blocked}>
+     <button className="monogram" onClick={returnPortrait} aria-label="JL — retour au portrait">JL<span>.</span></button>
+     <div className="header-study"><span>Étudiant en BUT MMI</span><span>Design & développement</span></div>
+     <div className="header-location"><span>Basé en</span><span>Corse, France</span></div>
+     <nav aria-label="Navigation principale"><button onClick={explore}>Explorer</button><span aria-hidden="true">·</span><button onClick={event=>openInfo('about',event)}>À propos</button><span aria-hidden="true">·</span><button onClick={event=>openInfo('contact',event)}>Contact</button></nav>
+   </header>
+   <main>
+     <section ref={root} id="scene" className="scene" aria-label="Portrait de projets et exploration" tabIndex={-1} style={{'--project-count':projects.length} as React.CSSProperties}>
+       <div className="scene-frame" inert={blocked||reading}>
+         <figure className="portrait-stage" aria-label={portraitAssets.provisional?"Portrait humain provisoire composé des couvertures des projets":"Portrait en miniatures de "+profile.name}>
+           <img className="portrait-poster" src={portraitAssets.poster} alt="" aria-hidden="true" style={{opacity:ready&&!fallback?0:1}}/>
+           {!fallback&&<SceneBoundary onFailure={onFailure}><Suspense fallback={null}><PortraitScene progress={progress} reduced={reduced} paused={paused||blocked} onReady={onReady} onFailure={onFailure}/></Suspense></SceneBoundary>}
+           <figcaption className="sr-only">{portraitAssets.provisional?"Portrait humain fictif provisoire. ":""}Les couvertures de {projects.length} projets sont répétées pour construire plusieurs milliers de miniatures.</figcaption>
+         </figure>
+         <div className="portrait-home">
+           <div className="home-topline eyebrow"><span><i className="status-dot"/> {String(projects.length).padStart(2,'0')} PROJETS · UN PORTRAIT</span><span>ESPACE CRÉATIF / JULIEN LEONETTI</span></div>
+           <svg className="portrait-lines" viewBox="0 0 1440 1000" preserveAspectRatio="none" aria-hidden="true"><path d="M-80 940C-10 700 440 565 1180 220M465 945C530 755 480 390 474 238" fill="none" stroke="currentColor" strokeWidth="1"/></svg>
+           <div className="home-copy"><p>{profile.introduction}</p><span className="eyebrow">DESIGN · CODE · CRÉATION NUMÉRIQUE</span></div>
+           <button className="explore-button" onClick={explore}>Explorer les projets <span aria-hidden="true">↓</span></button>
+           <h1><span>Julien</span> <span>Leonetti</span><i aria-hidden="true">.</i></h1>
+         </div>
+         <div className="project-field" aria-label="Projets en exploration">{projects.map((item,index)=><article className="project-card" key={item.slug} data-project={item.slug}>
+           <button className="cover-button" onClick={event=>openProject(item.slug,event)} aria-label={'Voir le projet '+item.title}><img src={item.image.src} alt={item.image.alt} width="1200" height="900"/><span className="cover-action">Voir le projet <Arrow/></span></button>
+           <span className="sr-only">{String(index+1).padStart(2,'0')} — {item.category}</span>
+         </article>)}</div>
+         <div className="project-caption">{projects.map((item,index)=><div data-project-caption key={item.slug}><span className="project-number">{String(index+1).padStart(2,'0')}</span><div><h2>{item.title}</h2><p>{item.category}</p></div></div>)}</div>
+         <div className="exploration-controls">
+           <span className="project-counter eyebrow" aria-live="polite">{String(active+1).padStart(2,'0')} / {String(projects.length).padStart(2,'0')}</span>
+           <div className="step-buttons"><button onClick={()=>goTo(active-1)} disabled={active===0} aria-label="Projet précédent">←</button><button onClick={()=>goTo(active+1)} disabled={active===projects.length-1} aria-label="Projet suivant">→</button></div>
+           <button className="portrait-return" onClick={returnPortrait}><span aria-hidden="true">↶</span> Retour au portrait</button>
+         </div>
+       </div>
+       {reading&&<aside className="project-index" aria-labelledby="project-index-title" inert={blocked}>
+         <div className="index-heading"><div><span className="eyebrow">PARCOURIR LES ÉTUDES</span><h2 id="project-index-title">Les projets<span> ({String(projects.length).padStart(2,'0')})</span></h2></div><button className="pill-button" onClick={toggleReading}>Retour à la scène ↗</button></div>
+         <div className="index-scroll" tabIndex={0} aria-label="Liste des projets"><div className="index-grid">{projects.map((item,index)=><button className="index-project" key={item.slug} onClick={event=>openProject(item.slug,event)} aria-label={'Voir le projet '+item.title}><img src={item.image.src} alt={item.image.alt} width="1200" height="900" loading="lazy"/><span className="index-project-caption"><span className="eyebrow">{String(index+1).padStart(2,'0')}</span><span>{item.title}<small>{item.category}</small></span><Arrow/></span></button>)}</div></div>
+       </aside>}
+     </section>
+   </main>
+   <div className="scene-tools" inert={blocked}><button className="reading-toggle" onClick={toggleReading}>{reading?'Fermer la liste':'Liste des projets'}</button>{!reduced&&<button onClick={()=>setPaused(value=>!value)} className="motion-toggle" aria-pressed={paused} aria-label={paused?'Reprendre les animations':'Suspendre les animations'}>{paused?'▷':'Ⅱ'}</button>}</div>
+   {overlay&&<div className="modal-layer"><div className="modal-backdrop" onClick={close} aria-hidden="true"/>
+     {project?<ProjectModal key={project.slug} project={project} index={projects.indexOf(project)} total={projects.length} origin={origin.current} reduced={reduced} onClose={close} onPortrait={returnPortrait}/>:<aside className="info-panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="info-title" aria-describedby="info-description">
+       <div className="info-top"><span className="eyebrow">{overlay.kind==='about'?'À PROPOS':'CONTACT'} / JULIEN LEONETTI</span><button data-close onClick={close} aria-label={'Fermer '+(overlay.kind==='about'?'À propos':'Contact')}>×</button></div>
+       <h2 id="info-title">{overlay.kind==='about'?'Moi, c’est Julien.':'Et si on échangeait ?'}</h2><p id="info-description">{overlay.kind==='about'?profile.introduction:'Design, développement et création numérique.'}</p>
+       {overlay.kind==='about'?<div className="info-note eyebrow">BUT MMI · IUT DE CORSE<br/>{portraitAssets.provisional||projects.some(item=>item.demonstration)?"Portrait et projets provisoires de démonstration.":"Basé en Corse, France."}</div>:contactLinks.length>0?<div className="contact-links">{contactLinks.map(link=><a href={link.href} key={link.label}>{link.label}<Arrow/></a>)}</div>:null}
+       <button className="info-return" onClick={close}>Retour à la scène <Arrow/></button>
+     </aside>}
+   </div>}
+ </div>;
 }

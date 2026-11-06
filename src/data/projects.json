@@ -1,0 +1,322 @@
+[
+  {
+    "slug": "forma",
+    "title": "Forma",
+    "category": "Identité graphique",
+    "accent": "#fc6c35",
+    "description": "L’idée prend forme.",
+    "context": "Une identité de démonstration construite avec trois formes simples et une couleur franche. Le système explore le dialogue entre un signe, une lettre et une composition.",
+    "approach": [
+      "Réduire le vocabulaire graphique à un cercle, un angle et une surface.",
+      "Faire varier les rapports d’échelle pour obtenir une famille de signes reconnaissable."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Identité graphique"
+    ],
+    "image": {
+      "src": "./projects/forma-cover.svg",
+      "alt": "Forma — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/forma-02.svg",
+        "alt": "Forma — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/forma-03.svg",
+        "alt": "Forma — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "onde",
+    "title": "Onde",
+    "category": "Interface musicale",
+    "accent": "#c5ff64",
+    "description": "Écouter autrement.",
+    "context": "Une interface musicale fictive où la pochette et la découverte occupent le premier plan. Les titres et sélections présentés dans les maquettes sont imaginaires.",
+    "approach": [
+      "Dessiner une interface calme, avec une hiérarchie claire entre découverte, collection et lecture.",
+      "Associer des couleurs sourdes à un accent lumineux pour rendre la navigation lisible."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Interface musicale"
+    ],
+    "image": {
+      "src": "./projects/onde-cover.svg",
+      "alt": "Onde — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/onde-02.svg",
+        "alt": "Onde — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/onde-03.svg",
+        "alt": "Onde — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "atelier-04",
+    "title": "Atelier 04",
+    "category": "Site de studio",
+    "accent": "#e9e4d9",
+    "description": "Des idées. Des formes.",
+    "context": "Un site éditorial de démonstration pour un studio imaginaire. La mise en page met en relation typographie serif, lignes fines et aplats de matière.",
+    "approach": [
+      "Construire le rythme à partir d’une grille ouverte et de grands espaces de respiration.",
+      "Décliner le langage du site dans une carte et une petite collection de mises en page."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Site de studio"
+    ],
+    "image": {
+      "src": "./projects/atelier-04-cover.svg",
+      "alt": "Atelier 04 — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/atelier-04-02.svg",
+        "alt": "Atelier 04 — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/atelier-04-03.svg",
+        "alt": "Atelier 04 — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "flux",
+    "title": "Flux",
+    "category": "Motion design",
+    "accent": "#ec482e",
+    "description": "Le mouvement comme langage.",
+    "context": "Une étude graphique de mouvement, présentée en trois compositions clés. Les trajectoires courbes et les lettres donnent une impression d’accélération.",
+    "approach": [
+      "Explorer une seule trajectoire et ses décalages successifs.",
+      "Utiliser les répétitions comme des images consécutives d’un mouvement."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Motion design"
+    ],
+    "image": {
+      "src": "./projects/flux-cover.svg",
+      "alt": "Flux — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/flux-02.svg",
+        "alt": "Flux — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/flux-03.svg",
+        "alt": "Flux — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "rivage",
+    "title": "Rivage",
+    "category": "Expérience éditoriale",
+    "accent": "#c6e8f3",
+    "description": "Entre terre et lumière.",
+    "context": "Un journal numérique imaginaire consacré aux horizons. Le projet associe une typographie expressive à un dessin de courbes inspiré des lignes de niveau.",
+    "approach": [
+      "Composer une couverture qui laisse place au regard.",
+      "Faire cohabiter une lecture éditoriale stable et un paysage de lignes plus libre."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Expérience éditoriale"
+    ],
+    "image": {
+      "src": "./projects/rivage-cover.svg",
+      "alt": "Rivage — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/rivage-02.svg",
+        "alt": "Rivage — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/rivage-03.svg",
+        "alt": "Rivage — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "module",
+    "title": "Module",
+    "category": "Interface de tableau de bord",
+    "accent": "#b9f2d4",
+    "description": "Tout, au même endroit.",
+    "context": "Une maquette d’espace de travail personnel. Les valeurs et graphiques sont des données illustratives, utilisées pour étudier l’organisation visuelle d’un tableau de bord.",
+    "approach": [
+      "Séparer la navigation, les repères synthétiques et la zone de travail.",
+      "Définir un système de composants sobres et réutilisables."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Interface de tableau de bord"
+    ],
+    "image": {
+      "src": "./projects/module-cover.svg",
+      "alt": "Module — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/module-02.svg",
+        "alt": "Module — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/module-03.svg",
+        "alt": "Module — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "sillage",
+    "title": "Sillage",
+    "category": "Packaging",
+    "accent": "#d9c4a3",
+    "description": "Les objets laissent une trace.",
+    "context": "Un concept fictif de packaging botanique. Les volumes sont des constructions vectorielles originales, avec des ombres simples et une gamme de couleurs minérales.",
+    "approach": [
+      "Chercher une présence par la matière et le contraste plutôt que par l’accumulation.",
+      "Décliner le signe sur plusieurs formats d’emballage."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Packaging"
+    ],
+    "image": {
+      "src": "./projects/sillage-cover.svg",
+      "alt": "Sillage — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/sillage-02.svg",
+        "alt": "Sillage — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/sillage-03.svg",
+        "alt": "Sillage — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "orbite",
+    "title": "Orbite",
+    "category": "Exploration 3D",
+    "accent": "#a8b4f1",
+    "description": "Tourner autour d’une idée.",
+    "context": "Une étude procédurale de volume. Un éventail de surfaces fait naître un objet circulaire, entre profondeur, rotation et lumière.",
+    "approach": [
+      "Décrire une forme à partir d’une règle géométrique simple.",
+      "Déplacer le point de vue pour faire apparaître plusieurs lectures du même objet."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Exploration 3D"
+    ],
+    "image": {
+      "src": "./projects/orbite-cover.svg",
+      "alt": "Orbite — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/orbite-02.svg",
+        "alt": "Orbite — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/orbite-03.svg",
+        "alt": "Orbite — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "echo",
+    "title": "Écho",
+    "category": "Affiche typographique",
+    "accent": "#eff500",
+    "description": "Ce qui reste après le signe.",
+    "context": "Une série d’affiches de démonstration autour de la répétition d’un mot. Les variations d’alignement et de densité transforment la lettre en image.",
+    "approach": [
+      "Donner toute la place à une typographie massive.",
+      "Travailler les répétitions et les espaces négatifs comme une matière."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Affiche typographique"
+    ],
+    "image": {
+      "src": "./projects/echo-cover.svg",
+      "alt": "Écho — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/echo-02.svg",
+        "alt": "Écho — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/echo-03.svg",
+        "alt": "Écho — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  },
+  {
+    "slug": "traverse",
+    "title": "Traverse",
+    "category": "Application de voyage",
+    "accent": "#21715b",
+    "description": "Le goût du détour.",
+    "context": "Une application de voyage fictive qui privilégie les chemins et les détours. Tous les itinéraires de ces maquettes sont imaginaires.",
+    "approach": [
+      "Construire une lecture simple de l’itinéraire et de ses étapes.",
+      "Associer un dessin topographique à des cartes mobiles très lisibles."
+    ],
+    "demonstration": true,
+    "disciplines": [
+      "Application de voyage"
+    ],
+    "image": {
+      "src": "./projects/traverse-cover.svg",
+      "alt": "Traverse — couverture graphique de démonstration"
+    },
+    "gallery": [
+      {
+        "src": "./projects/traverse-02.svg",
+        "alt": "Traverse — deuxième composition du concept"
+      },
+      {
+        "src": "./projects/traverse-03.svg",
+        "alt": "Traverse — troisième composition du concept"
+      }
+    ],
+    "role": "Conception et exploration visuelle — projet personnel de démonstration.",
+    "links": []
+  }
+]

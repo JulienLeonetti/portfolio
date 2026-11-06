@@ -1,46 +1,47 @@
-# Julien Leonetti — Scène continue
+# Julien Leonetti — Portrait de projets
 
-Portfolio local en français : React, TypeScript, Vite et GSAP. Une seule scène plein écran contient la galerie, les trois expériences et les petits panneaux À propos et Contact. Le défilement vertical natif traverse la galerie avec une progression finie.
+Une seule page : un visage en miniatures se forme, le scroll traverse ces images et les projets s’ouvrent dans une fiche à défilement indépendant. Dix concepts fictifs sont marqués **Projet de démonstration**.
 
 ## Lancer
 
-Node.js 22.14+ et npm :
+Node.js 22.14+ :
 
 ```sh
 npm ci
 npm run dev
-npm run check
 npm test
 npm run build
 npm run preview
 ```
 
-Le build statique est dans `dist/`. Pour installer le navigateur des tests : `npx playwright install chromium`.
+Le livrable statique est `dist/`. Pour installer Chromium si nécessaire : `npx playwright install chromium`. Les tests utilisent le port 5185.
 
-## Modifier le contenu
+## Remplacer le portrait
 
-- `src/data/site.ts` : présentation et coordonnées (`email`, `github`, `linkedin`, `cv`). Seuls les liens valides renseignés apparaissent dans le panneau Contact. Pour un CV : `public/cv.pdf`, puis `cv: './cv.pdf'`.
-- `src/data/experiments.ts` : les trois expériences réellement créées pour ce portfolio.
-- `src/data/projects.ts` : le tableau `projects` reste vide en attendant les projets réels.
-- `src/hooks/useGallery.ts` : positions, profondeur, cadrage mobile et progression du scroll.
-- `src/styles.css` : palette, interface et typographie. Space Grotesk est servi localement sous licence SIL OFL ; Georgia italique est une police système.
+Le portrait représente un adulte fictif, **pas Julien**. Il a été généré avec l’outil intégré image_gen ; le prompt est dans `public/portrait/PROMPT.txt`.
 
-## Ajouter un projet
+1. Remplacer `public/portrait/source.png` par une photo en buste 3:4, sur fond noir ou transparent, avec les traits du visage lisibles.
+2. Exécuter `npm run assets` pour recalculer les positions, la luminance, l’atlas et le portrait statique.
+3. Passer `provisional` à `false` dans `src/data/portrait.ts`.
 
-Respecter le type `Project` : `title`, `slug` unique, `category`, `description`, `disciplines`, `image: {src, alt}`, `context`, `role`, `approach: string[]`, `gallery: {src, alt}[]`, `links: {label, url}[]`.
+La photo source n’est pas affichée derrière le canvas. Les miniatures et leur luminosité forment réellement le visage.
 
-Placer les images dans `public/projects/`, puis utiliser `./projects/fichier.webp`. Un projet valide rejoint la scène et la lecture simplifiée avec la mention PROJET. Son détail s’ouvre dans le même espace. Les données incomplètes, les slugs dupliqués et les noms réservés au laboratoire sont exclus. Aucun projet de démonstration n’est livré.
+## Remplacer les projets et coordonnées
 
-## Navigation et accessibilité
+Modifier `src/data/projects.json` : `slug`, `title`, `category`, `description`, `accent`, `image: {src, alt}`, `gallery`, `context`, `role`, `approach`, `disciplines`, `links`, `demonstration`.
 
-Explorer ramène au cadrage initial. Les repères discrets en bas centrent directement chaque expérience. À propos et Contact ouvrent un panneau sans changer l’URL. Les expériences utilisent les mêmes surfaces qu’en galerie. La fermeture au bouton ou à Échap restitue le focus et la position exacte avant ouverture.
+Placer les visuels dans `public/projects/`, avec des chemins locaux comme `./projects/couverture.webp` (4:3 recommandé). Passer `demonstration` à `false` pour un vrai projet. Après ajout, retrait, changement de couverture ou d’ordre, relancer `npm run assets`.
 
-Lecture simplifiée reste disponible en bas de l’interface. Elle est activée automatiquement avec mouvement réduit ou sans WebGL. Les interactions sont accessibles par boutons et au toucher. La commande pause supprime l’interpolation des déplacements et du shader.
+Les 30 visuels SVG de démonstration sont locaux et originaux. Le générateur conserve les fichiers existants ; `npm run assets -- --demo-visuals` recrée volontairement les démonstrations d’origine.
 
-La galerie utilise CSS 3D et SVG ; un seul canvas WebGL est monté lors de l’ouverture de Surface sensible. Le rendu est à la demande, le DPR est plafonné à 1,5 et les ressources sont libérées à la fermeture. Aucun son automatique ni ressource visuelle distante.
+`src/data/site.ts` centralise la présentation et les coordonnées. E-mail, GitHub, LinkedIn et CV restent masqués s’ils sont vides. Pour le CV : `public/cv.pdf`, puis `cv: './cv.pdf'`.
 
-## Vérification
+## Navigation et vérification
 
-Les tests Chromium couvrent les cadrages 390/768/1440 px, la scène unique, le défilement dans les deux sens, le retour aux positions précédentes, les panneaux sans changement d’URL, le focus, les trois interactions, le tactile, le redimensionnement, la lecture simplifiée, le mouvement réduit et l’absence de WebGL. Une donnée technique injectée uniquement dans le navigateur vérifie l’ajout des futurs projets.
+Explorer entre dans les projets. Précédent/suivant et les flèches gauche/droite les parcourent. Une fiche utilise `#projet/slug` : lien direct, copie du lien et historique fonctionnent dans la même page. Échap ferme la fiche et restitue le focus et le scroll. Retour au portrait revient à la composition initiale.
 
-Captures de la version courante : `.artifacts/continuous-*.png`. Les anciennes captures restent archivées. Tests sur navigateur, sans appareil mobile physique.
+Un seul canvas Three.js instancié et un atlas servent environ 8 900 rectangles, avec densité réduite sur mobile et positions déterministes. Après l’entrée, le rendu est à la demande. Mouvement réduit : portrait déjà formé. Sans WebGL 2 : portrait statique et liste accessible. Les grandes images des fiches sont chargées à la demande.
+
+La scène est dans `src/components/PortraitScene.tsx`, la progression dans `src/hooks/useJourney.ts`, les fiches dans `src/components/ProjectModal.tsx` et le générateur dans `scripts/build-assets.cjs`.
+
+Tests Chromium : 390/768/1440 px, scroll inverse, entrée interrompue, fiches, presse-papiers, lien direct, historique, clavier, tactile, redimensionnement, clics rapides et modes accessibles. Captures : `.artifacts/mosaic-*.png`. Aucun appareil mobile physique testé. Space Grotesk est local sous SIL OFL ; Georgia est une police système.
